@@ -157,7 +157,7 @@ html, body {
 
 .logo {
   display: block;
-  width: 75%; /* Ajustez la largeur selon vos besoins */
+  width: 70%; /* Ajustez la largeur selon vos besoins */
   height: auto; /* Maintient les proportions de l'image */
   z-index: 100; /* Assurez-vous que le logo est au-dessus des autres éléments */
   margin: 0; /* Supprime toute marge par défaut */
