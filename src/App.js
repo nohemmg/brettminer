@@ -64,10 +64,14 @@ function App() {
   const [tvl, setTVL] = useState({ eth: 0, usd: 0 });
   const [brettBalance, setBrettBalance] = useState(0);
   const [halvingPercentage, setHalvingPercentage] = useState(100);
+  const [brettPrice, setBrettPrice] = useState(0);
   const [userReward, setUserReward] = useState(0);
   const [referral, setReferral] = useState(
     "0x0000000000000000000000000000000000000000"
   );
+
+
+
 
   const initializeContract = async () => {
     if (window.ethereum) {
@@ -263,6 +267,16 @@ function App() {
         console.error("Error connecting wallet:", err);
     }
   })
+
+  useEffect(() => {
+    const getPrice = async () => {
+      const price = await fetchTokenPrice();
+      setBrettPrice(price);
+    };
+    getPrice();
+  })
+
+  const claimableValue = (userReward*brettPrice).toFixed(2);
   
   useEffect(() => {
     if (walletAddress) {
@@ -300,8 +314,8 @@ function App() {
             <hr className="custom-hr"></hr>
             <p className="custom-font">
             The $BRETT reward pool with the richest daily return and lowest
-            dev fee, daily income up to 8% and a referal bonus up to
-            12%&nbsp;
+            dev fee, daily income of up to 12% and a referral bonus of 10%.
+            &nbsp;
             <a
                 href="https://brett-miner-1.gitbook.io/brett-miner"
                 target="_blank"
@@ -394,7 +408,7 @@ function App() {
                 padding: 0,
                 }}
             >
-                {tvl.eth} Tokens (${tvl.usd} USD)
+                {tvl.eth} Tokens (${tvl.usd})
             </p>
             </div>
 
@@ -457,7 +471,7 @@ function App() {
                 padding: 0,
                 }}
             >
-                {myMiners}
+                {myMiners} 
             </p>
             </div>
 
@@ -564,6 +578,7 @@ function App() {
                 }}
             >
                 {userReward} BRETT 
+                (${claimableValue})
             </p>
             </div>
             

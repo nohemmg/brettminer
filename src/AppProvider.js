@@ -25,15 +25,16 @@ function AppProvider() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
+        <RainbowKitProvider locale="zh-En"
           theme={lightTheme({
-            accentColor: "#44A7D2",
+            accentColor: "#0553F7",
             accentColorForeground: "black",
             fontStack: "system",
             overlayBlur: "small",
           })}
         >
-          <App />
+          <div style={{ display: "flex", justifyContent: "flex-start"}}>
+          <App /></div>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
