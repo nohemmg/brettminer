@@ -2,7 +2,7 @@ import { useAccount } from "wagmi";
 import logo from "./logo.png";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-
+import Swal from "sweetalert2";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import styled from "styled-components";
@@ -97,7 +97,15 @@ function App() {
         console.error("Error initializing contract:", err);
       }
     } else {
-      alert("MetaMask is not installed. Please install it to use this app.");
+      Swal.fire({
+        title: "Oops...",
+        text: "MetaMask is not installed. Please install it to use this app.",
+        icon: "error",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      });
     }
   };
 
@@ -161,18 +169,31 @@ function App() {
     }
   };
 
+  let cachedPrice = null; // Stocke le prix en cache
+  let lastFetchTime = 0; // Stocke le timestamp du dernier fetch
+  
   const fetchTokenPrice = async () => {
+    const now = Date.now();
+    
+    // Vérifie si le prix est en cache et qu'il a été mis à jour il y a moins d'une minute
+    if (cachedPrice !== null && now - lastFetchTime < 60 * 1000) {
+      return cachedPrice;
+    }
+  
     try {
       const response = await fetch(
         "https://api.coingecko.com/api/v3/simple/price?ids=based-brett&vs_currencies=usd"
       );
       const data = await response.json();
-      return data["based-brett"].usd;
+      cachedPrice = data["based-brett"].usd; // Met à jour le prix en cache
+      lastFetchTime = now; // Met à jour le timestamp du dernier fetch
+      return cachedPrice;
     } catch (err) {
       console.error("Error fetching token price:", err);
-      return 0;
+      return cachedPrice || 0; // Retourne la dernière valeur mise en cache ou 0 si aucune
     }
   };
+  
 
 
 
@@ -185,7 +206,15 @@ function App() {
         { value: ethers.utils.parseEther(amount) }
       );
       await tx.wait();
-      alert("Deposit ETH successful!");
+      Swal.fire({
+        title: "Success!",
+        text: "Deposit ETH successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      })
       fetchTVL();
     } catch (err) {
       console.error("Error during ETH deposit:", err);
@@ -221,7 +250,15 @@ function App() {
           ethers.constants.MaxUint256
         );
         await approveTx.wait();
-        alert("Approval successful!");
+        Swal.fire({
+          title: "Success!",
+          text: "Approval successful",
+          icon: "success",
+          confirmButtonText: "OK",
+          width: "400px",
+          background: "#f4f4f4", // Couleur d'arrière-plan
+          confirmButtonColor: "#0553F7",
+        })
       }
   
       // Déposer les tokens en utilisant l'adresse de parrainage
@@ -230,7 +267,15 @@ function App() {
         referral  // Utilisation de l'adresse de parrainage ici
       );
       await depositTx.wait();
-      alert("Deposit Brett successful!");
+      Swal.fire({
+        title: "Success!",
+        text: "Deposit Brett successful",
+        icon: "success",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      })
     } catch (err) {
       console.error("Error during Brett deposit:", err);
     }
@@ -279,10 +324,39 @@ function App() {
       const referralLink = `${window.location.origin}/?ref=${walletAddress}`;
       navigator.clipboard
         .writeText(referralLink)
-        .then(() => alert("Referral link copied to clipboard!"))
-        .catch(() => alert("Failed to copy referral link."));
+        .then(() => 
+          Swal.fire({
+            title: "Success!",
+            text: "Referral link copied to clipboard!",
+            icon: "success",
+            confirmButtonText: "OK",
+            width: "400px",
+            background: "#f4f4f4", // Couleur d'arrière-plan
+            confirmButtonColor: "#0553F7",
+          })
+        )
+        .catch(() => 
+          Swal.fire({
+            title: "Oops...",
+            text: "Failed to copy referral link.",
+            icon: "error",
+            confirmButtonText: "OK",
+            width: "400px",
+            background: "#f4f4f4", // Couleur d'arrière-plan
+            confirmButtonColor: "#0553F7",
+          })
+        ); 
+
     } else {
-      alert("Connect your wallet to generate a referral link.");
+      Swal.fire({
+        title: "Oops...",
+        text: "Connect your wallet to generate a referral link.",
+        icon: "error",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      });
     }
   };
 
@@ -742,40 +816,40 @@ function App() {
             </ReferralSection>
         </Section2>
 
-        <div class="social-icons-container">
-            <div class="telegram-icon">
-            <a
-                href="https://t.me/Brett_Miner"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 496 512"
-                width="30"
-                height="30"
+        <div className="social-icons-container">
+              <div className="telegram-icon">
+                <a
+                  href="https://t.me/Brett_Miner"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                <path d="M248 8C111 8 0 119 0 256S111 504 248 504 496 393 496 256 385 8 248 8zM363 176.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7 .2-.7 .3-3.1-1.2-4.4s-3.6-.8-5.1-.5q-3.3 .7-104.6 69.1-14.8 10.2-26.9 9.9c-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3q.8-6.7 18.5-13.7 108.4-47.2 144.6-62.3c68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6 .5 9.6 2.9a10.5 10.5 0 0 1 3.5 6.7A43.8 43.8 0 0 1 363 176.7z" />
-                </svg>
-            </a>
-            </div>
-            <div class="twitter-icon">
-            <a
-                href="https://x.com/BrettMinerBase"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                width="30"
-                height="30"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 496 512"
+                    width="30"
+                    height="30"
+                  >
+                    <path d="M248 8C111 8 0 119 0 256S111 504 248 504 496 393 496 256 385 8 248 8zM363 176.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7 .2-.7 .3-3.1-1.2-4.4s-3.6-.8-5.1-.5q-3.3 .7-104.6 69.1-14.8 10.2-26.9 9.9c-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3q.8-6.7 18.5-13.7 108.4-47.2 144.6-62.3c68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6 .5 9.6 2.9a10.5 10.5 0 0 1 3.5 6.7A43.8 43.8 0 0 1 363 176.7z" />
+                  </svg>
+                </a>
+              </div>
+              <div className="twitter-icon">
+                <a
+                  href="https://x.com/BrettMinerBase"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                <path d="M459.4 151.7c.3 4.5 .3 9.1 .3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53 51.7 63.7 129.3 105.3 216.4 109.8-1.6-7.8-2.6-15.9-2.6-24 0-57.8 46.8-104.9 104.9-104.9 30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3z" />
-                </svg>
-            </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="30"
+                    height="30"
+                  >
+                    <path d="M459.4 151.7c.3 4.5 .3 9.1 .3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53 51.7 63.7 129.3 105.3 216.4 109.8-1.6-7.8-2.6-15.9-2.6-24 0-57.8 46.8-104.9 104.9-104.9 30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3z" />
+                  </svg>
+                </a>
+              </div>
             </div>
-        </div>
     </LeftSection>
   );
 }
