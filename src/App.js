@@ -289,7 +289,15 @@ function App() {
         "0x0000000000000000000000000000000000000000"
       );
       await tx.wait();
-      alert("Compound successful!");
+      Swal.fire({
+        title: "Success!",
+        text: "Compound successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      })
     } catch (err) {
       console.error("Error during compound:", err);
     }
@@ -303,7 +311,15 @@ function App() {
     try {
       const tx = await brettMinerContract.withdraw();
       await tx.wait();
-      alert("Withdraw successful!");
+      Swal.fire({
+        title: "Success!",
+        text: "Withdraw successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4", // Couleur d'arrière-plan
+        confirmButtonColor: "#0553F7",
+      })
     } catch (err) {
       console.error("Error during withdrawal:", err);
     }
