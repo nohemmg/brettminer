@@ -10,7 +10,7 @@ import BrettMinerABI from "./abis/BrettMinerABI.json";
 import "./App.css"; // Assurez-vous que ce fichier est bien importé
 
 // Adresse du contrat et du token Brett
-const contractAddress = "0xd2D8d271ef45A2A975E468A39A6810427365210a";
+const contractAddress = "0xb69360dB3696f35b5469b65c03Abd5538c493c82";
 const brettTokenAddress = "0x532f27101965dd16442e59d40670faf5ebb142e4";
 
 const BOX = styled.section`
@@ -70,7 +70,16 @@ function App() {
     "0x0000000000000000000000000000000000000000"
   );
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralFromUrl = urlParams.get("ref");
 
+    if (referralFromUrl) {
+      setReferral(referralFromUrl);  // Si présent, on définit 'referral'
+    } else {
+      setReferral("0x0000000000000000000000000000000000000000");  // Sinon on met l'adresse par défaut
+    }
+  }, []);
 
 
   const initializeContract = async () => {
@@ -172,7 +181,7 @@ function App() {
     try {
       const tx = await brettMinerContract.depositETH(
         ethers.utils.parseEther(amount),
-        "0x0000000000000000000000000000000000000000",
+        referral,  // Utilisation de l'adresse de parrainage
         { value: ethers.utils.parseEther(amount) }
       );
       await tx.wait();
@@ -182,6 +191,7 @@ function App() {
       console.error("Error during ETH deposit:", err);
     }
   };
+  
 
   const depositBrett = async (amount) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -195,14 +205,16 @@ function App() {
       signer
     );
     const brettMinerContract = await initializeContract();
-
+  
     try {
+      // Vérification de l'autorisation de transfert du token
       const allowance = await brettTokenContract.allowance(
         walletAddress,
         contractAddress
       );
       const amountInWei = ethers.utils.parseUnits(amount, 18);
-
+  
+      // Si l'autorisation est insuffisante, approuver le contrat pour dépenser des tokens
       if (allowance.lt(amountInWei)) {
         const approveTx = await brettTokenContract.approve(
           contractAddress,
@@ -211,10 +223,11 @@ function App() {
         await approveTx.wait();
         alert("Approval successful!");
       }
-
+  
+      // Déposer les tokens en utilisant l'adresse de parrainage
       const depositTx = await brettMinerContract.depositBrett(
         amountInWei,
-        "0x0000000000000000000000000000000000000000"
+        referral  // Utilisation de l'adresse de parrainage ici
       );
       await depositTx.wait();
       alert("Deposit Brett successful!");
@@ -222,6 +235,7 @@ function App() {
       console.error("Error during Brett deposit:", err);
     }
   };
+  
 
   const compound = async () => {
     const brettMinerContract = await initializeContract();
@@ -236,17 +250,8 @@ function App() {
     }
   };
 
-  const copyReferralLink = () => {
-    if (walletAddress) {
-      const referralLink = `${window.location.origin}/?ref=${walletAddress}`;
-      navigator.clipboard
-        .writeText(referralLink)
-        .then(() => alert("Referral link copied to clipboard!"))
-        .catch(() => alert("Failed to copy referral link."));
-    } else {
-      alert("Connect your wallet to generate a referral link.");
-    }
-  };
+  
+  
 
   const withdraw = async () => {
     const brettMinerContract = await initializeContract();
@@ -267,6 +272,19 @@ function App() {
         console.error("Error connecting wallet:", err);
     }
   })
+
+  const copyReferralLink = () => {
+    if (walletAddress) {
+      // Générer le lien de parrainage avec l'adresse du wallet
+      const referralLink = `${window.location.origin}/?ref=${walletAddress}`;
+      navigator.clipboard
+        .writeText(referralLink)
+        .then(() => alert("Referral link copied to clipboard!"))
+        .catch(() => alert("Failed to copy referral link."));
+    } else {
+      alert("Connect your wallet to generate a referral link.");
+    }
+  };
 
   useEffect(() => {
     const getPrice = async () => {
@@ -300,9 +318,11 @@ function App() {
         <BOX>
             <div
             style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+              paddingRight: "40px",
             }}
             >
             <img src={logo} alt="Logo" className="logo" />
@@ -462,6 +482,7 @@ function App() {
                     margin: 0, // Supprime toute marge du texte
                     padding: 0,
                   }}
+
               >
                 My Miners:
             </p>

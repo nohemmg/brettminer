@@ -28,7 +28,7 @@ function AppProvider() {
         <RainbowKitProvider locale="zh-En"
           theme={lightTheme({
             accentColor: "#0553F7",
-            accentColorForeground: "black",
+            accentColorForeground: "white",
             fontStack: "system",
             overlayBlur: "small",
           })}
