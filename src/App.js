@@ -459,6 +459,42 @@ function App() {
         </Section2>
 
         <Section2>
+        <div
+          className="flex items-center"
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <h1
+            className="custom-font"
+            style={{ margin: 0, paddingRight: "10px" , marginBottom: "1px"}}
+          >
+            <strong>REFERAL LINK</strong>
+          </h1>
+          <span
+            style={{ flex: 1, height: "1px", backgroundColor: "black" }}
+          ></span>
+        </div>
+
+        <ReferralSection
+          className="custom-font"
+          style={{ textAlign: "center" }}
+        >
+          <Button className="button-87" onClick={copyReferralLink}>
+            Copy Referral Link
+          </Button>
+            <div style={{ paddingTop:"15px" , paddingBottom:"15px"}}>
+          <p
+            className="custom-font"
+            style={{   textAlign: "left" }}
+          >
+            Brett Miner's referral program allows each user to get a <strong>10% bonus </strong> 
+            on the initial deposit of the person they refer. This encourages
+            users to share the platform and grow the community.
+          </p>
+          </div>
+        </ReferralSection>
+      </Section2>
+
+        <Section2>
             <div
             className="flex items-center"
             style={{ display: "flex", alignItems: "center" }}
@@ -805,32 +841,6 @@ function App() {
             </p>
             </div>
         </Section>
-
-        <Section2>
-            <div
-            className="flex items-center"
-            style={{ display: "flex", alignItems: "center" }}
-            >
-            <h1
-                className="custom-font"
-                style={{ margin: 0, paddingRight: "10px" }}
-            >
-                <strong>REFERAL LINK</strong>
-            </h1>
-            <span
-                style={{ flex: 1, height: "1px", backgroundColor: "black" }}
-            ></span>
-            </div>
-
-            <ReferralSection
-            className="custom-font"
-            style={{ textAlign: "center" }}
-            >
-            <Button className="button-87" onClick={copyReferralLink}>
-                Copy Referral Link
-            </Button>
-            </ReferralSection>
-        </Section2>
 
         <div className="social-icons-container">
               <div className="telegram-icon">
