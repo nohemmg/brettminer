@@ -88,13 +88,12 @@ html, body {
 .LeftSection {
   width: 100%;
   max-width: 700px;
-  background-color: rgb(222, 246, 255); /* Couleur neutre */
-  padding: 40px;
-  margin:   33px auto 15px auto; /* Centre horizontalement */
+  background-color: rgb(222, 246, 255); 
+  padding: 20px;
+  margin:   33px auto 15px auto; 
   border-radius: 13px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
-
 
 
 .custom-font {

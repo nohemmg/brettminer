@@ -158,7 +158,7 @@ function App() {
     try {
       const balance = await brettMinerContract.getBalance();
       const tokenPrice = await fetchTokenPrice();
-      const tvlInEth = ethers.utils.formatEther(balance);
+      const tvlInEth = parseFloat(ethers.utils.formatEther(balance)).toFixed(2); // Limite à 2 décimales
       setTVL({
         eth: tvlInEth,
         usd: (tvlInEth * tokenPrice).toFixed(2),
@@ -569,7 +569,7 @@ const fetchTokenPrice = async () => {
                 padding: 0,
                 }}
             >
-                {tvl.eth} Tokens (${tvl.usd})
+                {tvl.eth} BRETT (${tvl.usd})
             </p>
             </div>
 
