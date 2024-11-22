@@ -211,29 +211,64 @@ const fetchTokenPrice = async () => {
 
 
 
-  const depositETH = async (amount) => {
-    const brettMinerContract = await initializeContract();
-    try {
-      const tx = await brettMinerContract.depositETH(
-        ethers.utils.parseEther(amount),
-        referral,  // Utilisation de l'adresse de parrainage
-        { value: ethers.utils.parseEther(amount) }
-      );
-      await tx.wait();
-      Swal.fire({
-        title: "Success!",
-        text: "Deposit ETH successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-        width: "400px",
-        background: "#f4f4f4", // Couleur d'arrière-plan
-        confirmButtonColor: "#0553F7",
-      })
-      fetchTVL();
-    } catch (err) {
-      console.error("Error during ETH deposit:", err);
-    }
-  };
+const depositETH = async (amount) => {
+  const brettMinerContract = await initializeContract();
+
+  try {
+    // Afficher un popup "pending" pendant le traitement
+    Swal.fire({
+      title: "Processing Deposit...",
+      text: "Please wait while your ETH is being deposited.",
+      icon: "info",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      width: "400px",
+      background: "#f4f4f4",
+      customClass: {
+        popup: "swal-popup-bottom-right", // Optionnel : pour positionner en bas à droite
+      },
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // Lancer la transaction de dépôt d'ETH
+    const tx = await brettMinerContract.depositETH(
+      ethers.utils.parseEther(amount),
+      referral, // Utilisation de l'adresse de parrainage
+      { value: ethers.utils.parseEther(amount) }
+    );
+    await tx.wait();
+
+    // Afficher un popup de succès après le dépôt
+    Swal.fire({
+      title: "Success!",
+      text: "Deposit ETH successful!",
+      icon: "success",
+      confirmButtonText: "OK",
+      width: "400px",
+      background: "#f4f4f4",
+      confirmButtonColor: "#0553F7",
+    });
+
+    // Actualiser les données après le dépôt
+    fetchTVL();
+  } catch (err) {
+    console.error("Error during ETH deposit:", err);
+
+    // Afficher un message d'erreur si quelque chose ne va pas
+    Swal.fire({
+      title: "Error",
+      text: err.message || "An error occurred during the transaction.",
+      icon: "error",
+      confirmButtonText: "OK",
+      width: "400px",
+      background: "#f4f4f4",
+      confirmButtonColor: "#f44336",
+    });
+  }
+};
+
   
 
   const depositBrett = async (amount) => {
@@ -250,6 +285,20 @@ const fetchTokenPrice = async () => {
     const brettMinerContract = await initializeContract();
   
     try {
+      // Afficher un popup "pending" pour le processus global
+      Swal.fire({
+        title: "Processing...",
+        text: "Please wait while the transaction is processed.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        width: "400px",
+        background: "#f4f4f4",
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+  
       // Vérification de l'autorisation de transfert du token
       const allowance = await brettTokenContract.allowance(
         walletAddress,
@@ -264,36 +313,63 @@ const fetchTokenPrice = async () => {
           ethers.constants.MaxUint256
         );
         await approveTx.wait();
-        Swal.fire({
-          title: "Success!",
-          text: "Approval successful",
+  
+        // Mettre à jour le popup après l'approbation
+        Swal.update({
+          title: "Approval successful!",
+          text: "Starting deposit...",
           icon: "success",
-          confirmButtonText: "OK",
+          showConfirmButton: false, // Pas de bouton "OK", transition directe vers le dépôt
+        });
+  
+        // Lancer un nouveau popup "pending" pour le dépôt
+        Swal.fire({
+          title: "Processing Deposit...",
+          text: "Your Brett tokens are being deposited.",
+          icon: "info",
+          allowOutsideClick: false,
+          showConfirmButton: false,
           width: "400px",
-          background: "#f4f4f4", // Couleur d'arrière-plan
-          confirmButtonColor: "#0553F7",
-        })
+          background: "#f4f4f4",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
       }
   
       // Déposer les tokens en utilisant l'adresse de parrainage
       const depositTx = await brettMinerContract.depositBrett(
         amountInWei,
-        referral  // Utilisation de l'adresse de parrainage ici
+        referral // Utilisation de l'adresse de parrainage ici
       );
       await depositTx.wait();
+  
+      // Afficher un popup de succès après le dépôt
       Swal.fire({
         title: "Success!",
-        text: "Deposit Brett successful",
+        text: "Deposit Brett successful.",
         icon: "success",
         confirmButtonText: "OK",
         width: "400px",
-        background: "#f4f4f4", // Couleur d'arrière-plan
+        background: "#f4f4f4",
         confirmButtonColor: "#0553F7",
-      })
+      });
     } catch (err) {
       console.error("Error during Brett deposit:", err);
+  
+      // Afficher un message d'erreur si quelque chose ne va pas
+      Swal.fire({
+        title: "Error",
+        text: err.message || "An error occurred during the transaction.",
+        icon: "error",
+        confirmButtonText: "OK",
+        width: "400px",
+        background: "#f4f4f4",
+        confirmButtonColor: "#f44336",
+      });
     }
   };
+  
   
 
   const compound = async () => {

@@ -204,3 +204,16 @@ html, body {
   transform: scale(1.1); /* Agrandissement au survol */
 }
 
+
+/* Supprimer les flèches dans Webkit (Chrome, Safari) */
+.textInputWrapper input[type="number"]::-webkit-outer-spin-button,
+.textInputWrapper input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Supprimer les flèches dans Firefox */
+.textInputWrapper input[type="number"] {
+  -moz-appearance: textfield;
+}
+
