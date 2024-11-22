@@ -132,7 +132,7 @@ function App() {
     try {
       const myPoints = await brettMinerContract.getMyPoints();
       const reward = await brettMinerContract.calculatePointSell(myPoints);
-      const formattedReward = parseFloat(ethers.utils.formatEther(reward)).toFixed(2); // Limite à 2 décimales
+      const formattedReward = parseFloat(ethers.utils.formatEther(reward)).toFixed(4); // Limite à 2 décimales
       setUserReward(formattedReward);
     } catch (err) {
       console.error("Error fetching reward:", err);
