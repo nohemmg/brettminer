@@ -118,24 +118,28 @@ function App() {
     );
     try {
       const balance = await brettTokenContract.balanceOf(address);
-      setBrettBalance(ethers.utils.formatEther(balance));
+      const formattedBalance = parseFloat(ethers.utils.formatEther(balance)).toFixed(2); // Limite à 2 décimales
+      setBrettBalance(formattedBalance);
     } catch (err) {
       console.error("Error fetching Brett balance:", err);
       setBrettBalance(0);
     }
   };
+  
 
   const fetchReward = async () => {
     const brettMinerContract = await initializeContract();
     try {
       const myPoints = await brettMinerContract.getMyPoints();
       const reward = await brettMinerContract.calculatePointSell(myPoints);
-      setUserReward(ethers.utils.formatEther(reward));
+      const formattedReward = parseFloat(ethers.utils.formatEther(reward)).toFixed(2); // Limite à 2 décimales
+      setUserReward(formattedReward);
     } catch (err) {
       console.error("Error fetching reward:", err);
       setUserReward(0);
     }
   };
+  
 
   const fetchContractData = async () => {
     const brettMinerContract = await initializeContract();
